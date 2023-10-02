@@ -3,12 +3,18 @@ import asyncio
 import logging
 import json
 
+from govee_led_wez import GoveeController, GoveeDevice
+
+
 _LOGGER = logging.getLogger(__name__)
 
 
 class GoveeAPI(object):
     def __init__(self, api_key):
         self.api_key = api_key
+
+    def poller_loop(self):
+        pass
 
     def get_device(self, device_id, model):
         _LOGGER.debug('getting device {}'.format(device_id))
@@ -86,3 +92,43 @@ class GoveeAPI(object):
             _LOGGER.error('ERROR SENDING DEVICE COMMAND')
             
         _LOGGER.debug(r)
+
+class GoveeLocalAPI(object):
+
+    def __init__(self):
+        self.controller = GoveeController()
+        self.controller.set_device_change_callback(self.device_changed)
+        self.devices = {}
+        self.poller_started = False
+
+
+    def device_changed(self, device: GoveeDevice):
+        _LOGGER.info(f"{device.device_id} state -> {device.state}")
+        self.devices[device.device_id] = device
+
+
+    def get_device(self, device_id, model):
+        _LOGGER.info("Getting device")
+        return self.devices.get(device_id)
+
+    def get_device_list(self):
+        _LOGGER.info("Getting devices list")
+        return {
+            "devices": map(lambda device: {
+                "device": device.device,
+                "controllable": True,
+                "model": device.model,
+                "deviceName":  device["device_name"],
+                "supportedCmds": []
+            } , self.devices.items())
+        }
+
+    def send_command(self, device_id, model, cmd, value):
+        _LOGGER.info("Send command")
+        pass
+
+    def poller_loop(self):
+        if self.poller_started is False:
+            self.controller.start_lan_poller()
+            self.poller_started = True
+        return self.controller.lan_pollers

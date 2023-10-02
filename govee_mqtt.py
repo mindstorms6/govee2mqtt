@@ -13,7 +13,10 @@ class GoveeMqtt(object):
 
     def __init__(self, config):
         self.mqtt_config = config['mqtt']
-        self.govee_config = config['govee']
+        self.govee_config = config.get('govee')
+
+        if self.govee_config is None:
+            self.govee_config = {}
 
         self.devices = {}
         self.running = False
@@ -25,11 +28,16 @@ class GoveeMqtt(object):
 
         self.mqttc_create()
 
-        self.goveec = goveeapi.GoveeAPI(self.govee_config['api_key'])
+        if 'api_key' in self.govee_config:
+            _LOGGER.info('Using govee remote API')
+            self.goveec = goveeapi.GoveeAPI(self.govee_config['api_key'])
+        else:
+            _LOGGER.info('Using Local Govee API')
+            self.goveec = goveeapi.GoveeLocalAPI()
 
-        self.device_update_interval = config['govee'].get('device_interval', 30)
-        self.device_update_boosted_interval = config['govee'].get('device_boost_interval', 5)
-        self.device_list_update_interval = config['govee'].get('device_list_interval', 300)
+        self.device_update_interval = self.govee_config.get('device_interval', 30)
+        self.device_update_boosted_interval = self.govee_config.get('device_boost_interval', 5)
+        self.device_list_update_interval = self.govee_config.get('device_list_interval', 300)
 
         self.mqtt_from_govee_field_map = {
             'state': ['powerState', lambda x: 'ON' if x == 'on' else 'OFF'],
@@ -45,8 +53,10 @@ class GoveeMqtt(object):
             'color': ['color', lambda x: {'r': x['r'], 'g': x['g'], 'b': x['b']}],
         }
 
-
+        _LOGGER.info('Starting event loop')
+        _LOGGER.info("Govee poller started")
         asyncio.run(self.start_govee_loop())
+        _LOGGER.info('Event loop started')
 
 
     # MQTT Functions
@@ -268,6 +278,7 @@ class GoveeMqtt(object):
             self.device_list_loop(),
             self.device_loop(),
             self.device_boosted_loop(),
+            self.goveec.poller_loop()[0]
         )
 
     async def device_list_loop(self):

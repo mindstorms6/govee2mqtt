@@ -1,5 +1,5 @@
 mqtt:
-  host: 10.10.10.1
+  host: 192.168.4.231
   port: 1883
   username: govee
   password: password
@@ -7,6 +7,7 @@ mqtt:
   homeassistant: homeassistant
 
 govee:
-  api_key: xxx
+#  api_key: xxx
+
 
 debug: False
