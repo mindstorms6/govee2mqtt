@@ -33,3 +33,9 @@ An docker image is available at `dlashua/govee2mqtt:latest`. Mount your configur
 * Tap on "about us"
 * Tap on "Apply for API Key"
 * Get the API key via email within minutes
+
+# One shot:
+
+```
+docker build . -t govee2mqtt && docker run  --rm -v "$(pwd)/config.yaml.sample":/config/config.yaml:ro  -p 4001:4001/UDP govee2mqtt
+```
