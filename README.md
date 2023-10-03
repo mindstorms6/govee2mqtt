@@ -54,5 +54,5 @@ An docker image is available at `dlashua/govee2mqtt:latest`. Mount your configur
 # One shot:
 
 ```
-docker build . -t govee2mqtt && docker run  --rm -v "$(pwd)/config.yaml.sample":/config/config.yaml:ro  -p 4001:4001/UDP govee2mqtt
+docker build . -t govee2mqtt && docker run  --rm -v "$(pwd)/config.yaml.sample":/config/config.yaml:ro  --net=host govee2mqtt
 ```
