@@ -3,7 +3,7 @@ import asyncio
 import logging
 import json
 
-from govee_led_wez import GoveeController, GoveeDevice
+from govee_led_wez import GoveeController, GoveeDevice, GoveeDeviceState, GoveeColor
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -103,29 +103,57 @@ class GoveeLocalAPI(object):
 
 
     def device_changed(self, device: GoveeDevice):
-        _LOGGER.info(f"{device.device_id} state -> {device.state}")
-        self.devices[device.device_id] = device
+        _LOGGER.debug(f"{device.device_id} state -> {device.state}")
+        _LOGGER.info(f"{device.device_id} -> {device}")
+        if self.devices.get(device.device_id, None) is None:
+            self.devices[device.device_id] = device
+        if self.devices.get(device.device_id, None) is not None and device.state is not None:
+            self.devices.get(device.device_id).state = device.state
+        asyncio.create_task(self.controller.update_device_state(device))
 
 
     def get_device(self, device_id, model):
-        _LOGGER.info("Getting device")
-        return self.devices.get(device_id)
-
-    def get_device_list(self):
-        _LOGGER.info("Getting devices list")
+        _LOGGER.debug(f"Getting device {device_id}")
+        govee_device: GoveeDevice = self.devices.get(device_id)
+        asyncio.create_task(self.controller.update_device_state(govee_device))
+        govee_device_state: GoveeDeviceState = govee_device.state
+        if govee_device_state is None:
+            return {}
+        _LOGGER.debug(f"state: {govee_device_state}")
         return {
-            "devices": map(lambda device: {
-                "device": device.device,
-                "controllable": True,
-                "model": device.model,
-                "deviceName":  device["device_name"],
-                "supportedCmds": []
-            } , self.devices.items())
+            "powerState": "on" if govee_device_state.turned_on == True else "off",
+            "brightness": govee_device_state.brightness_pct,
+            "color": { "r": govee_device_state.color.red, "g": govee_device_state.color.green, "b": govee_device_state.color.blue},
+            "availability": True,
         }
 
+    def get_device_list(self):
+        # _LOGGER.debug("Getting devices list")
+        mapped = {
+            "devices": map(lambda device: {
+                "device": device.device_id,
+                "controllable": True,
+                "model": device.model,
+                "deviceName":  device.lan_definition.ip_addr + " " + device.model,
+                "supportCmds": []
+            } , self.devices.values())
+        }
+        # _LOGGER.debug(mapped)
+        return mapped
+
+
     def send_command(self, device_id, model, cmd, value):
-        _LOGGER.info("Send command")
-        pass
+        _LOGGER.info(f"Send command {device_id}: {cmd} => {value}" )
+        govee_device: GoveeDevice = self.devices.get(device_id)
+        task = None
+        if cmd == "color":
+            task = self.controller.set_color(govee_device, GoveeColor(red=value["r"], green=value["g"], blue=value["b"]))
+        if cmd == "brightness":
+            task = self.controller.set_brightness(govee_device, brightness_pct=value)
+        if cmd == "turn":
+            task = self.controller.set_power_state(govee_device, turned_on=True if value == "on" else False)
+        if task is not None:
+            asyncio.run(task)
 
     def poller_loop(self):
         if self.poller_started is False:

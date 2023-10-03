@@ -28,16 +28,21 @@ class GoveeMqtt(object):
 
         self.mqttc_create()
 
+        default_list_interval = 300
+        default_update_device_interval = 30
+
         if 'api_key' in self.govee_config:
             _LOGGER.info('Using govee remote API')
             self.goveec = goveeapi.GoveeAPI(self.govee_config['api_key'])
         else:
             _LOGGER.info('Using Local Govee API')
             self.goveec = goveeapi.GoveeLocalAPI()
+            default_list_interval = 1
+            default_update_device_interval = 5
 
-        self.device_update_interval = self.govee_config.get('device_interval', 30)
+        self.device_update_interval = self.govee_config.get('device_interval', default_update_device_interval)
         self.device_update_boosted_interval = self.govee_config.get('device_boost_interval', 5)
-        self.device_list_update_interval = self.govee_config.get('device_list_interval', 300)
+        self.device_list_update_interval = self.govee_config.get('device_list_interval', default_list_interval)
 
         self.mqtt_from_govee_field_map = {
             'state': ['powerState', lambda x: 'ON' if x == 'on' else 'OFF'],
@@ -181,11 +186,11 @@ class GoveeMqtt(object):
                     _LOGGER.info('NEW DEVICE {} ({})'.format(self.devices[device_id]['name'],device_id))
                     self.homeassistant_config(device_id)
 
-                _LOGGER.debug('saw {}'.format(device_id))
+                # _LOGGER.debug('saw {}'.format(device_id))
             else:
                 _LOGGER.debug('saw but not controlable {}'.format(device_id))
 
-        _LOGGER.debug(self.devices)
+        # _LOGGER.debug(self.devices)
 
     def refresh_all_devices(self):
         for device_id in self.devices:
