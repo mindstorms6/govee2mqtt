@@ -1,3 +1,20 @@
+# Fork of Govee2MQTT with Local API support
+
+This uses the `govee_led_wez` library to enable local mqtt control of Govee devices.
+
+Ensure the `Local API` is enabled.
+
+To trigger `local` mode - ensure the `config.yaml` file you are using only has:
+
+```yaml
+govee:
+```
+
+Do not include the `api_key` - as this will trigger the remote http API. 
+
+---
+
+# Old Readme:
 
 Govee recently released a public API to control their WiFi light strips, among other things.
 
