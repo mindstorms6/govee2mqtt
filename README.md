@@ -12,7 +12,11 @@ govee:
 
 Do not include the `api_key` - as this will trigger the remote http API. 
 
+See the file `config.yaml.sample` for the basic config options / examples. 
+
 # Run the docker image detached:
+
+Ensure you pass the path of your actual `config.yaml` (not the sample file) to the command below. 
 
 ```
 docker run -d --name govee2mqtt --rm -v "$(pwd)/config.yaml.sample":/config/config.yaml:ro --net=host govee2mqtt
