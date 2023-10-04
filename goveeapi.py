@@ -45,6 +45,9 @@ class GoveeAPI(object):
                 new_attributes[key] = attribute_data[key]
 
         return new_attributes
+    
+    def normalizeBrightness(self, x: int):
+        return round(x/254*100)
 
 
     def get_device_list(self):
@@ -100,6 +103,9 @@ class GoveeLocalAPI(object):
         self.controller.set_device_change_callback(self.device_changed)
         self.devices = {}
         self.poller_started = False
+
+    def normalizeBrightness(self, x: int):
+        return x
 
 
     def device_changed(self, device: GoveeDevice):

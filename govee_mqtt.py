@@ -54,7 +54,7 @@ class GoveeMqtt(object):
 
         self.govee_from_mqtt_field_map = {
             'turn': ['state', lambda x: 'on' if x == 'ON' else 'off'],
-            'brightness': ['brightness', lambda x: round(x/254*100)],
+            'brightness': ['brightness', lambda x: self.goveec.normalizeBrightness(x)],
             'color': ['color', lambda x: {'r': x['r'], 'g': x['g'], 'b': x['b']}],
         }
 
