@@ -48,6 +48,9 @@ class GoveeAPI(object):
     
     def normalizeBrightness(self, x: int):
         return round(x/254*100)
+    
+    def brightnessScale(self):
+        return 255
 
 
     def get_device_list(self):
@@ -106,6 +109,9 @@ class GoveeLocalAPI(object):
 
     def normalizeBrightness(self, x: int):
         return x
+    
+    def brightnessScale(self):
+        return 100
 
 
     def device_changed(self, device: GoveeDevice):

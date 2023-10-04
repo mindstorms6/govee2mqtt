@@ -140,7 +140,7 @@ class GoveeMqtt(object):
         config = {
             # 'availability_topic': self.get_pub_topic(device_id, 'availability'),
             'brightness': True,
-            'brightness_scale': 255,
+            'brightness_scale': self.goveec.brightnessScale(),
             # 'color_temp': True,
             'rgb': True,
             'command_topic': self.get_set_topic(device_id),

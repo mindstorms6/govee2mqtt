@@ -56,3 +56,5 @@ An docker image is available at `dlashua/govee2mqtt:latest`. Mount your configur
 ```
 docker build . -t govee2mqtt && docker run  --rm -v "$(pwd)/config.yaml.sample":/config/config.yaml:ro  --net=host govee2mqtt
 ```
+
+docker pull ghcr.io/mindstorms6/govee2mqtt@sha256:ef999f3fff50279f8b03aa1c92022308c802cd43e53bebbebdee05656115d6b5
