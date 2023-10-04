@@ -1,7 +1,7 @@
 version: "3.4"
 services:
   govee2mqtt:
-    image: dlashua/govee2mqtt:latest
+    image: ghcr.io/mindstorms6/govee2mqtt:main
     container_name: govee2mqtt
     restart: unless-stopped
     volumes:
