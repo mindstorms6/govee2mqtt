@@ -186,11 +186,11 @@ class GoveeMqtt(object):
                     _LOGGER.info('NEW DEVICE {} ({})'.format(self.devices[device_id]['name'],device_id))
                     self.homeassistant_config(device_id)
 
-                # _LOGGER.debug('saw {}'.format(device_id))
+                _LOGGER.debug('saw {}'.format(device_id))
             else:
                 _LOGGER.debug('saw but not controlable {}'.format(device_id))
 
-        # _LOGGER.debug(self.devices)
+        _LOGGER.debug(self.devices.values())
 
     def refresh_all_devices(self):
         for device_id in self.devices:

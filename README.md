@@ -12,6 +12,13 @@ govee:
 
 Do not include the `api_key` - as this will trigger the remote http API. 
 
+# Run the docker image detached:
+
+```
+docker run -d --name govee2mqtt --rm -v "$(pwd)/config.yaml.sample":/config/config.yaml:ro --net=host govee2mqtt
+```
+
+
 ---
 
 # Old Readme:
@@ -51,10 +58,3 @@ An docker image is available at `dlashua/govee2mqtt:latest`. Mount your configur
 * Tap on "Apply for API Key"
 * Get the API key via email within minutes
 
-# One shot:
-
-```
-docker build . -t govee2mqtt && docker run  --rm -v "$(pwd)/config.yaml.sample":/config/config.yaml:ro  --net=host govee2mqtt
-```
-
-docker pull ghcr.io/mindstorms6/govee2mqtt@sha256:ef999f3fff50279f8b03aa1c92022308c802cd43e53bebbebdee05656115d6b5

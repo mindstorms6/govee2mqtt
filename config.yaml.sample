@@ -1,5 +1,5 @@
 mqtt:
-  host: 192.168.4.231
+  host: 192.168.4.231 # set your mqtt broker
   port: 1883
   username: govee
   password: password
@@ -7,7 +7,9 @@ mqtt:
   homeassistant: homeassistant
 
 govee:
-#  api_key: xxx
+#  api_key: xxx # only set for remote-api 
+#  device_interval: 30 # local can be more frequent
+#  device_list_interval: 300 #local can be more frequent
 
 
 debug: False
