@@ -66,7 +66,6 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
-            # full length sha
             type=sha,format=long
 
       # Build and push Docker image with Buildx (don't push on PR)
